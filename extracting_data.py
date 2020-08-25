@@ -1,9 +1,7 @@
 import pandas as pd
-import numpy as np
 from bokeh.plotting import figure, output_notebook, show
 from bokeh.models import Span, BoxAnnotation
 import numpy as np
-from pathlib import Path
 from astropy.time import Time
 
 
