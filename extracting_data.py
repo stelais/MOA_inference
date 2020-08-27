@@ -1,8 +1,8 @@
 import pandas as pd
-from bokeh.plotting import figure, output_notebook, show
-from bokeh.models import Span, BoxAnnotation
+from bokeh.plotting import figure, show
 import numpy as np
 from astropy.time import Time
+from simple_plot import plotter
 
 
 def time_converter(t0):
@@ -152,20 +152,8 @@ class Event:
         fluxes = data[:, 1]
         fluxes_error = data[:, 2]
         p = figure(title="Lightcurve " + str(self.event_name), plot_width=900, plot_height=300)
-        p.xaxis.axis_label = 'Days'
-        p.yaxis.axis_label = 'Flux'
-
-        t0_location = Span(location=t0,
-                           dimension='height', line_color='red',
-                           line_dash='dashed', line_width=1)
-        p.add_layout(t0_location)
-
-        box = BoxAnnotation(left=(t0 - t0_error), right=(t0 + t0_error),
-                            line_width=1, line_color='black', line_dash='dashed',
-                            fill_alpha=0.2, fill_color='orange')
-
-        p.add_layout(box)
-        p.circle(times, fluxes, fill_alpha=0.2, size=5)
+        p = plotter(times, fluxes, fluxes_error, p, legend_label=self.event_name, y_label_name='Flux', color='black',
+                    plot_errorbar=False, t0_error_plot=True, t0=t0, t0_error=t0_error)
         show(p)
 
 
