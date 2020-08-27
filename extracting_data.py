@@ -74,7 +74,7 @@ class Event:
     """
 
     def __init__(self, field=None, band=None, chip=None, subfield=None, event_id=None,
-                 event_name=None, t0=None, t0_error=None):
+                 event_name=None, t0=None, t0_error=None, name_alerts=None, tag=None):
         self.field = field
         self.band = band
         self.chip = chip
@@ -83,6 +83,8 @@ class Event:
         self.event_name = event_name
         self.t0 = t0
         self.t0_error = t0_error
+        self.name_alerts = name_alerts
+        self.tag = tag
 
     def use_name_to_define(self):
         no_suffix = self.event_name.split(".")[0]
@@ -134,6 +136,16 @@ class Event:
         y_coordinate = lightcurve_meta_data["y"]
         return x_coordinate, y_coordinate
 
+    def getting_alert_name_from_metadata_alerts(self, meta_dataframe_alerts):
+        lightcurve_meta_data = meta_dataframe_alerts[(meta_dataframe_alerts['event_id'] == int(self.event_id)) &
+                                              (meta_dataframe_alerts['field'] == self.field) &
+                                              (meta_dataframe_alerts['chip'] == int(self.chip)) &
+                                              (meta_dataframe_alerts['subfield'] == int(self.subfield))]
+
+        self.name_alerts = lightcurve_meta_data["name_alerts"]
+        self.tag = lightcurve_meta_data["tag"]
+        return self.name_alerts, self.tag
+
     def producing_plots(self, data_directory):
         """
         Produce plot for the event
@@ -161,10 +173,13 @@ if __name__ == '__main__':
     metadata_path = '/Users/sishitan/Documents/MOA/inference_packages/candlist_RADec.dat.txt'
     meta_dataframe = load_microlensing_meta_data(metadata_path)
     metadata_22862_path = '/Users/sishitan/Documents/MOA/inference_packages/moa9yr_events_oct2018.txt'
+    metadata_22862_path_df = load_microlensing_meta_data_alerts(metadata_22862_path)
     data_directory = '/Users/sishitan/Documents/MOA/inference_Jul_Aug/MOA_microlensing_4/Inference_on_positives/'
     filename = 'gb9-R-4-5-234724.phot.cor'
     event = Event(event_name=filename)
     field, band, chip, subfield, event_id = event.use_name_to_define()
+    name_alerts, tag = event.getting_alert_name_from_metadata_alerts(metadata_22862_path_df)
+    print("name_alerts: ", name_alerts, "\ntag: ", tag)
     event.getting_t0_from_metadata(meta_dataframe)
     t0_human = time_converter(event.t0)
     print(f"t0: {float(event.t0)} +/- {float(event.t0_error)} days, which is in year {t0_human}")
