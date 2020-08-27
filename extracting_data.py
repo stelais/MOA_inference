@@ -188,4 +188,4 @@ if __name__ == '__main__':
     x_coor, y_coor = event.getting_XY_from_metadata(meta_dataframe)
     print("x_coor: ", x_coor, "\ny_coor: ", y_coor)
     event.producing_plots(data_directory)
-    print(getting_ra_and_dec_perl(str(field[-1]), str(chip), str(float(x_coor)), str(float(y_coor))))
+    print(getting_ra_and_dec_perl(str(field[2:]), str(chip), str(float(x_coor)), str(float(y_coor))))
